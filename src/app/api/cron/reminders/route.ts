@@ -3,7 +3,6 @@ import { isAuthorizedCron, pickOne } from '@/lib/cron';
 import { createServiceClient } from '@/lib/supabase/service';
 import { dispatchNotification } from '@/lib/notifications/dispatch';
 import { getTemplate, renderTemplate } from '@/lib/notifications/templates';
-import type { Locale } from '@/lib/i18n/config';
 
 export const runtime = 'nodejs';
 
@@ -43,7 +42,6 @@ export async function GET(req: Request) {
       | null;
 
     if (trainer?.whatsapp_enabled && client?.phone) {
-      const locale = (trainer.locale as Locale) || 'en';
       const d = new Date(s.starts_at);
       const dateStr = d.toLocaleDateString('en-US', {
         weekday: 'short',
@@ -57,7 +55,7 @@ export async function GET(req: Request) {
         timeZone: 'UTC',
       });
       const body = renderTemplate(
-        getTemplate(trainer.message_templates, 'session_reminder', locale),
+        getTemplate(trainer.message_templates, 'session_reminder'),
         {
           client_name: client.full_name,
           trainer_name: trainer.business_name || trainer.full_name || 'Your trainer',

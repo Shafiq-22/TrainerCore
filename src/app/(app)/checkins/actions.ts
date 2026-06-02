@@ -8,7 +8,6 @@ import { dispatchNotification } from '@/lib/notifications/dispatch';
 import { getTemplate, renderTemplate } from '@/lib/notifications/templates';
 import { getAppUrl } from '@/lib/env';
 import { ok, fail, type ActionResult } from '@/types';
-import type { Locale } from '@/lib/i18n/config';
 
 export async function updateCheckinConfigAction(input: {
   dayOfWeek: number;
@@ -71,8 +70,7 @@ export async function sendCheckinAction(clientId: string): Promise<ActionResult>
   if (error) return fail(error.message);
 
   const link = `${getAppUrl()}/checkin/${token}`;
-  const locale = (trainer.locale as Locale) || 'en';
-  const body = renderTemplate(getTemplate(trainer.message_templates, 'checkin', locale), {
+  const body = renderTemplate(getTemplate(trainer.message_templates, 'checkin'), {
     client_name: client.full_name,
     trainer_name: trainer.business_name || trainer.full_name || 'Your trainer',
     link,

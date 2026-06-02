@@ -10,7 +10,6 @@ export default async function ProfileSettingsPage() {
       phone={trainer.phone ?? ''}
       bio={trainer.bio ?? ''}
       avatarUrl={trainer.avatar_url ?? ''}
-      locale={trainer.locale}
     />
   );
 }

@@ -11,7 +11,6 @@ import { getStripe } from '@/lib/stripe/client';
 import { getAppUrl } from '@/lib/env';
 import { ok, fail, type ActionResult, type InvoiceLineItem, type InvoiceStatus } from '@/types';
 import type { Json } from '@/lib/supabase/database.types';
-import type { Locale } from '@/lib/i18n/config';
 
 function buildTotals(input: InvoiceInput) {
   const items: InvoiceLineItem[] = input.lineItems.map((li) => ({
@@ -162,8 +161,7 @@ export async function sendInvoiceAction(id: string): Promise<ActionResult> {
   const client = (Array.isArray(invoice.clients) ? invoice.clients[0] : invoice.clients) as
     | { full_name: string; phone: string | null }
     | null;
-  const locale = (trainer.locale as Locale) || 'en';
-  const template = getTemplate(trainer.message_templates, 'invoice_sent', locale);
+  const template = getTemplate(trainer.message_templates, 'invoice_sent');
   const body = renderTemplate(template, {
     client_name: client?.full_name ?? '',
     trainer_name: trainer.business_name || trainer.full_name || 'Your trainer',

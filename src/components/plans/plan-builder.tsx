@@ -226,8 +226,8 @@ export function PlanBuilder({
       <div className="flex items-center justify-between">
         <Button
           variant="ghost"
-          onClick={() => setStep((s) => Math.max(1, s - 1))}
-          disabled={step === 1 || saving}
+          onClick={() => (step === 1 ? router.push('/plans') : setStep((s) => s - 1))}
+          disabled={saving}
         >
           Back
         </Button>

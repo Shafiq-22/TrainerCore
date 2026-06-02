@@ -5,7 +5,6 @@ import { createServiceClient } from '@/lib/supabase/service';
 import { dispatchNotification } from '@/lib/notifications/dispatch';
 import { getTemplate, renderTemplate } from '@/lib/notifications/templates';
 import { getAppUrl } from '@/lib/env';
-import type { Locale } from '@/lib/i18n/config';
 
 export const runtime = 'nodejs';
 
@@ -45,8 +44,7 @@ export async function GET(req: Request) {
       });
       if (error) continue;
 
-      const locale = (trainer.locale as Locale) || 'en';
-      const body = renderTemplate(getTemplate(trainer.message_templates, 'checkin', locale), {
+      const body = renderTemplate(getTemplate(trainer.message_templates, 'checkin'), {
         client_name: client.full_name,
         trainer_name: trainer.business_name || trainer.full_name || 'Your trainer',
         link: `${getAppUrl()}/checkin/${token}`,

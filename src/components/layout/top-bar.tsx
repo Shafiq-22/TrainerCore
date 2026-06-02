@@ -10,7 +10,6 @@ import {
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/shared/logo';
-import { LangToggle } from '@/components/shared/lang-toggle';
 import { NavLinks } from './nav-links';
 import { UserMenu } from './user-menu';
 import type { NavTrainer } from './nav-items';
@@ -41,7 +40,6 @@ export function TopBar({ trainer }: { trainer: NavTrainer }) {
       </div>
 
       <div className="flex items-center gap-1 sm:gap-2">
-        <LangToggle />
         <UserMenu trainer={trainer} />
       </div>
     </header>

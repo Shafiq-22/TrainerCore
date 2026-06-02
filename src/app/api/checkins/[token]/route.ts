@@ -15,16 +15,21 @@ export async function GET(_req: Request, { params }: { params: { token: string }
 export async function POST(req: Request, { params }: { params: { token: string } }) {
   const body = await req.json().catch(() => ({}));
   const supabase = createClient();
+  const num = (v: unknown): number =>
+    (v != null && v !== '' && Number.isFinite(Number(v)) ? Number(v) : null) as unknown as number;
   const { data, error } = await supabase.rpc('submit_checkin', {
     p_token: params.token,
     p_energy: Number(body.energy),
     p_sleep: Number(body.sleep),
     p_nutrition: Number(body.nutrition),
     p_stress: Number(body.stress),
-    p_weight: (body.weight != null && body.weight !== ''
-      ? Number(body.weight)
-      : null) as unknown as number,
+    p_weight: num(body.weight),
     p_notes: body.notes ?? '',
+    p_body_fat: num(body.bodyFat),
+    p_chest: num(body.chest),
+    p_waist: num(body.waist),
+    p_hips: num(body.hips),
+    p_arm: num(body.arm),
   });
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
   return NextResponse.json(data);

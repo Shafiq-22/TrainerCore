@@ -10,13 +10,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 
 export function ProfileForm({
   userId,
@@ -24,21 +17,18 @@ export function ProfileForm({
   phone,
   bio,
   avatarUrl,
-  locale,
 }: {
   userId: string;
   fullName: string;
   phone: string;
   bio: string;
   avatarUrl: string;
-  locale: string;
 }) {
   const router = useRouter();
   const [name, setName] = useState(fullName);
   const [ph, setPh] = useState(phone);
   const [b, setB] = useState(bio);
   const [avatar, setAvatar] = useState(avatarUrl);
-  const [loc, setLoc] = useState(locale === 'ar' ? 'ar' : 'en');
   const [loading, setLoading] = useState(false);
 
   async function save() {
@@ -48,7 +38,6 @@ export function ProfileForm({
       phone: ph,
       bio: b,
       avatarUrl: avatar,
-      locale: loc,
     });
     setLoading(false);
     if (res.ok) {
@@ -77,18 +66,6 @@ export function ProfileForm({
         <div className="space-y-2">
           <Label htmlFor="bio">Bio</Label>
           <Textarea id="bio" rows={3} value={b} onChange={(e) => setB(e.target.value)} />
-        </div>
-        <div className="space-y-2">
-          <Label>Preferred language</Label>
-          <Select value={loc} onValueChange={setLoc}>
-            <SelectTrigger className="w-full sm:w-56">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="en">English</SelectItem>
-              <SelectItem value="ar">العربية</SelectItem>
-            </SelectContent>
-          </Select>
         </div>
         <Button onClick={save} disabled={loading}>
           {loading ? 'Saving…' : 'Save profile'}

@@ -5,7 +5,7 @@ import {
   Check,
   Dumbbell,
   FileText,
-  Languages,
+  LineChart,
   MessageCircle,
   Users,
 } from 'lucide-react';
@@ -60,10 +60,10 @@ const FEATURES = [
       'Automate weekly check-ins and reminders over WhatsApp so clients stay accountable between sessions.',
   },
   {
-    icon: Languages,
-    title: 'Bilingual EN / AR with RTL',
+    icon: LineChart,
+    title: 'Insightful dashboard',
     description:
-      'A fully bilingual interface in English and Arabic, with proper right-to-left layout for your region.',
+      'See active clients, sessions, revenue trends, outstanding invoices and check-in rates at a glance — built for the UAE/GCC.',
   },
 ];
 

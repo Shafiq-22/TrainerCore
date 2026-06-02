@@ -3,8 +3,34 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { getUser } from '@/lib/auth/get-trainer';
-import { ok, fail, type ActionResult } from '@/types';
+import { ok, fail, type ActionResult, type MuscleGroup } from '@/types';
 import type { PlanDraftInput } from '@/stores/plan-builder-store';
+
+export async function createCustomExerciseAction(input: {
+  name: string;
+  muscleGroup: string;
+  equipment: string;
+  instructions: string;
+}): Promise<ActionResult<{ id: string; name: string; muscle_group: MuscleGroup; equipment: string | null }>> {
+  const user = await getUser();
+  if (!user) return fail('Not authenticated');
+  if (!input.name.trim()) return fail('Exercise name is required');
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from('exercises')
+    .insert({
+      trainer_id: user.id,
+      name: input.name.trim(),
+      muscle_group: input.muscleGroup as MuscleGroup,
+      equipment: input.equipment.trim() || null,
+      instructions: input.instructions.trim() || null,
+      is_global: false,
+    })
+    .select('id,name,muscle_group,equipment')
+    .single();
+  if (error || !data) return fail(error?.message ?? 'Could not create exercise');
+  return ok(data);
+}
 
 const numOrNull = (s: string): number | null => {
   if (!s || s.trim() === '') return null;

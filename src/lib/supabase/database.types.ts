@@ -14,11 +14,15 @@ export type Database = {
     Tables: {
       checkins: {
         Row: {
+          arm_cm: number | null
+          body_fat_pct: number | null
+          chest_cm: number | null
           client_id: string
           completed_at: string | null
           created_at: string
           energy: number | null
           expires_at: string
+          hips_cm: number | null
           id: string
           notes: string | null
           nutrition: number | null
@@ -30,14 +34,19 @@ export type Database = {
           token: string
           trainer_id: string
           updated_at: string
+          waist_cm: number | null
           weight_kg: number | null
         }
         Insert: {
+          arm_cm?: number | null
+          body_fat_pct?: number | null
+          chest_cm?: number | null
           client_id: string
           completed_at?: string | null
           created_at?: string
           energy?: number | null
           expires_at?: string
+          hips_cm?: number | null
           id?: string
           notes?: string | null
           nutrition?: number | null
@@ -49,14 +58,19 @@ export type Database = {
           token?: string
           trainer_id: string
           updated_at?: string
+          waist_cm?: number | null
           weight_kg?: number | null
         }
         Update: {
+          arm_cm?: number | null
+          body_fat_pct?: number | null
+          chest_cm?: number | null
           client_id?: string
           completed_at?: string | null
           created_at?: string
           energy?: number | null
           expires_at?: string
+          hips_cm?: number | null
           id?: string
           notes?: string | null
           nutrition?: number | null
@@ -68,6 +82,7 @@ export type Database = {
           token?: string
           trainer_id?: string
           updated_at?: string
+          waist_cm?: number | null
           weight_kg?: number | null
         }
         Relationships: [
@@ -894,12 +909,17 @@ export type Database = {
       get_checkin: { Args: { p_token: string }; Returns: Json }
       submit_checkin: {
         Args: {
+          p_arm?: number
+          p_body_fat?: number
+          p_chest?: number
           p_energy: number
+          p_hips?: number
           p_notes: string
           p_nutrition: number
           p_sleep: number
           p_stress: number
           p_token: string
+          p_waist?: number
           p_weight: number
         }
         Returns: Json

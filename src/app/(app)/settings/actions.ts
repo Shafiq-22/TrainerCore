@@ -12,7 +12,6 @@ export async function updateProfileAction(input: {
   phone: string;
   bio: string;
   avatarUrl: string;
-  locale: string;
 }): Promise<ActionResult> {
   const user = await getUser();
   if (!user) return fail('Not authenticated');
@@ -24,7 +23,6 @@ export async function updateProfileAction(input: {
       phone: input.phone || null,
       bio: input.bio || null,
       avatar_url: input.avatarUrl || null,
-      locale: input.locale === 'ar' ? 'ar' : 'en',
     })
     .eq('id', user.id);
   if (error) return fail(error.message);

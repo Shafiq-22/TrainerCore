@@ -9,6 +9,7 @@ import { clientFormSchema, type ClientFormValues } from '@/lib/validators/client
 import { createClientAction, updateClientAction } from '@/app/(app)/clients/actions';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { NumericInput } from '@/components/shared/numeric-input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -120,7 +121,7 @@ export function ClientForm({ client }: { client?: Client }) {
           </div>
           <div className="space-y-2">
             <Label htmlFor="heightCm">Height (cm)</Label>
-            <Input id="heightCm" type="number" step="0.1" {...register('heightCm')} />
+            <NumericInput id="heightCm" {...register('heightCm')} />
           </div>
           <div className="space-y-2 sm:col-span-2">
             <Label>Calendar colour</Label>
@@ -139,6 +140,20 @@ export function ClientForm({ client }: { client?: Client }) {
                   }}
                 />
               ))}
+              <label
+                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-2 border-dashed border-muted-foreground/40 text-xs text-muted-foreground"
+                title="Pick any colour"
+                style={{ backgroundColor: CLIENT_COLORS.includes(color) ? undefined : color }}
+              >
+                {CLIENT_COLORS.includes(color) ? '+' : ''}
+                <input
+                  type="color"
+                  value={color}
+                  onChange={(e) => setValue('color', e.target.value)}
+                  aria-label="Custom calendar colour"
+                  className="sr-only"
+                />
+              </label>
             </div>
           </div>
         </CardContent>
@@ -159,11 +174,11 @@ export function ClientForm({ client }: { client?: Client }) {
           </div>
           <div className="space-y-2">
             <Label htmlFor="packageSessions">Sessions in package</Label>
-            <Input id="packageSessions" type="number" {...register('packageSessions')} />
+            <NumericInput id="packageSessions" {...register('packageSessions')} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="packagePrice">Package price (AED)</Label>
-            <Input id="packagePrice" type="number" step="0.01" {...register('packagePrice')} />
+            <NumericInput id="packagePrice" {...register('packagePrice')} />
           </div>
           {isEdit && (
             <div className="space-y-2">

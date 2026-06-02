@@ -4,13 +4,11 @@ import { useState } from 'react';
 import { CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { submitPublicCheckin } from '@/app/checkin/[token]/actions';
-import { dictionaries } from '@/lib/i18n/dictionaries';
-import type { Locale } from '@/lib/i18n/config';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { NumericInput } from '@/components/shared/numeric-input';
 import { cn } from '@/lib/utils/cn';
 
 function Rating({
@@ -50,19 +48,21 @@ export function PublicCheckinForm({
   token,
   clientName,
   trainerName,
-  locale,
 }: {
   token: string;
   clientName: string;
   trainerName: string;
-  locale: Locale;
 }) {
-  const t = (k: string) => dictionaries[locale]?.[k] ?? dictionaries.en[k] ?? k;
   const [energy, setEnergy] = useState(3);
   const [sleep, setSleep] = useState(3);
   const [nutrition, setNutrition] = useState(3);
   const [stress, setStress] = useState(3);
   const [weight, setWeight] = useState('');
+  const [bodyFat, setBodyFat] = useState('');
+  const [waist, setWaist] = useState('');
+  const [chest, setChest] = useState('');
+  const [hips, setHips] = useState('');
+  const [arm, setArm] = useState('');
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
@@ -75,6 +75,11 @@ export function PublicCheckinForm({
       nutrition,
       stress,
       weight,
+      bodyFat,
+      chest,
+      waist,
+      hips,
+      arm,
       notes,
     });
     setLoading(false);
@@ -89,8 +94,10 @@ export function PublicCheckinForm({
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-accent/10">
             <CheckCircle2 className="h-7 w-7 text-accent" />
           </div>
-          <h2 className="text-xl font-bold">{t('checkins.thanks')}</h2>
-          <p className="text-sm text-muted-foreground">{t('checkins.thanksBody')}</p>
+          <h2 className="text-xl font-bold">Thank you!</h2>
+          <p className="text-sm text-muted-foreground">
+            Your check-in has been recorded. Keep up the great work!
+          </p>
         </CardContent>
       </Card>
     );
@@ -100,35 +107,56 @@ export function PublicCheckinForm({
     <Card>
       <CardHeader>
         <CardTitle>
-          {clientName ? `${clientName}, ` : ''}
-          {t('checkins.title')}
+          {clientName ? `${clientName}, ` : ''}weekly check-in
         </CardTitle>
-        <p className="text-sm text-muted-foreground">{t('checkins.intro')}</p>
+        <p className="text-sm text-muted-foreground">
+          Your weekly check-in helps your trainer support you better.
+        </p>
         <p className="text-xs text-muted-foreground">{trainerName}</p>
       </CardHeader>
       <CardContent className="space-y-5">
-        <p className="text-xs text-muted-foreground">{t('checkins.rate')}</p>
-        <Rating label={t('checkins.energy')} value={energy} onChange={setEnergy} />
-        <Rating label={t('checkins.sleep')} value={sleep} onChange={setSleep} />
-        <Rating label={t('checkins.nutrition')} value={nutrition} onChange={setNutrition} />
-        <Rating label={t('checkins.stress')} value={stress} onChange={setStress} />
-        <div className="space-y-2">
-          <Label htmlFor="weight">{t('checkins.weight')}</Label>
-          <Input
-            id="weight"
-            type="number"
-            step="0.1"
-            inputMode="decimal"
-            value={weight}
-            onChange={(e) => setWeight(e.target.value)}
-          />
+        <p className="text-xs text-muted-foreground">Rate from 1 (low) to 5 (high)</p>
+        <Rating label="Energy" value={energy} onChange={setEnergy} />
+        <Rating label="Sleep" value={sleep} onChange={setSleep} />
+        <Rating label="Nutrition" value={nutrition} onChange={setNutrition} />
+        <Rating label="Stress" value={stress} onChange={setStress} />
+
+        <div className="space-y-3 rounded-lg border p-3">
+          <p className="text-sm font-medium">Body measurements (optional)</p>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <Label htmlFor="weight">Weight (kg)</Label>
+              <NumericInput id="weight" value={weight} onChange={(e) => setWeight(e.target.value)} />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="bodyFat">Body fat (%)</Label>
+              <NumericInput id="bodyFat" value={bodyFat} onChange={(e) => setBodyFat(e.target.value)} />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="waist">Waist (cm)</Label>
+              <NumericInput id="waist" value={waist} onChange={(e) => setWaist(e.target.value)} />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="chest">Chest (cm)</Label>
+              <NumericInput id="chest" value={chest} onChange={(e) => setChest(e.target.value)} />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="hips">Hips (cm)</Label>
+              <NumericInput id="hips" value={hips} onChange={(e) => setHips(e.target.value)} />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="arm">Arm (cm)</Label>
+              <NumericInput id="arm" value={arm} onChange={(e) => setArm(e.target.value)} />
+            </div>
+          </div>
         </div>
+
         <div className="space-y-2">
-          <Label htmlFor="cnotes">{t('checkins.notes')}</Label>
+          <Label htmlFor="cnotes">Anything you want to share?</Label>
           <Textarea id="cnotes" rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} />
         </div>
         <Button className="w-full" size="lg" onClick={submit} disabled={loading}>
-          {loading ? t('common.saving') : t('checkins.submit')}
+          {loading ? 'Saving…' : 'Submit check-in'}
         </Button>
       </CardContent>
     </Card>

@@ -19,7 +19,6 @@ const config: Config = {
     extend: {
       fontFamily: {
         sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],
-        arabic: ['var(--font-arabic)', 'system-ui', 'sans-serif'],
       },
       colors: {
         border: 'hsl(var(--border))',

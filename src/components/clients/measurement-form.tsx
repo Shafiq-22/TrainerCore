@@ -21,6 +21,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { NumericInput } from '@/components/shared/numeric-input';
 
 export function MeasurementForm({ clientId }: { clientId: string }) {
   const router = useRouter();
@@ -69,27 +70,27 @@ export function MeasurementForm({ clientId }: { clientId: string }) {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="weightKg">Weight (kg)</Label>
-              <Input id="weightKg" type="number" step="0.1" {...register('weightKg')} />
+              <NumericInput id="weightKg" {...register('weightKg')} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="bodyFatPct">Body fat (%)</Label>
-              <Input id="bodyFatPct" type="number" step="0.1" {...register('bodyFatPct')} />
+              <NumericInput id="bodyFatPct" {...register('bodyFatPct')} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="chestCm">Chest (cm)</Label>
-              <Input id="chestCm" type="number" step="0.1" {...register('chestCm')} />
+              <NumericInput id="chestCm" {...register('chestCm')} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="waistCm">Waist (cm)</Label>
-              <Input id="waistCm" type="number" step="0.1" {...register('waistCm')} />
+              <NumericInput id="waistCm" {...register('waistCm')} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="hipsCm">Hips (cm)</Label>
-              <Input id="hipsCm" type="number" step="0.1" {...register('hipsCm')} />
+              <NumericInput id="hipsCm" {...register('hipsCm')} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="armCm">Arm (cm)</Label>
-              <Input id="armCm" type="number" step="0.1" {...register('armCm')} />
+              <NumericInput id="armCm" {...register('armCm')} />
             </div>
           </div>
           <div className="space-y-2">

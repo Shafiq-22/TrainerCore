@@ -5,6 +5,7 @@ import {
   Wallet,
   ReceiptText,
   Activity,
+  CalendarClock,
 } from 'lucide-react';
 import {
   startOfMonth,
@@ -42,6 +43,7 @@ interface ClientLite {
   full_name: string;
   status: string;
   start_date: string;
+  created_at: string;
 }
 
 async function getData() {
@@ -52,6 +54,7 @@ async function getData() {
   const monthStart = startOfMonth(now);
   const sixStart = startOfMonth(subMonths(now, 5));
   const in24 = new Date(now.getTime() + 24 * 3600 * 1000).toISOString();
+  const in7 = new Date(now.getTime() + 7 * 24 * 3600 * 1000).toISOString();
   const since14 = subDays(now, 14).toISOString();
   const today = now.toISOString().slice(0, 10);
 
@@ -63,13 +66,10 @@ async function getData() {
     notificationsRes,
     recentCheckinRes,
     upcomingRes,
+    upcoming7Res,
   ] = await Promise.all([
-    supabase.from('clients').select('id,full_name,status,start_date'),
-    supabase
-      .from('sessions')
-      .select('id', { count: 'exact', head: true })
-      .gte('starts_at', ws)
-      .lte('starts_at', we),
+    supabase.from('clients').select('id,full_name,status,start_date,created_at'),
+    supabase.from('sessions').select('id,status').gte('starts_at', ws).lte('starts_at', we),
     supabase.from('invoices').select('id,invoice_number,total,status,paid_at,due_date,client_id'),
     supabase.from('checkins').select('status').gte('requested_for', format(subDays(now, 56), 'yyyy-MM-dd')),
     supabase.from('notifications').select('*').order('created_at', { ascending: false }).limit(8),
@@ -81,6 +81,12 @@ async function getData() {
       .gte('starts_at', now.toISOString())
       .lte('starts_at', in24)
       .order('starts_at'),
+    supabase
+      .from('sessions')
+      .select('id', { count: 'exact', head: true })
+      .eq('status', 'scheduled')
+      .gte('starts_at', now.toISOString())
+      .lte('starts_at', in7),
   ]);
 
   const clients = (clientsRes.data ?? []) as ClientLite[];
@@ -93,10 +99,24 @@ async function getData() {
     clients.find((c) => c.id === id)?.full_name ?? 'Client';
 
   const activeClients = clients.filter((c) => c.status === 'active').length;
+  const newClientsThisMonth = clients.filter(
+    (c) => c.created_at && isSameMonth(parseISO(c.created_at), monthStart),
+  ).length;
+
+  const sessionsWeekRows = (sessionsWeekRes.data ?? []) as { id: string; status: string }[];
+  const sessionsThisWeek = sessionsWeekRows.length;
+  const sessionsDone = sessionsWeekRows.filter((s) => s.status === 'completed').length;
 
   const revenueThisMonth = invoices
     .filter((i) => i.status === 'paid' && i.paid_at && isSameMonth(parseISO(i.paid_at), monthStart))
     .reduce((sum, i) => sum + Number(i.total), 0);
+  const lastMonthRevenue = invoices
+    .filter((i) => i.status === 'paid' && i.paid_at && isSameMonth(parseISO(i.paid_at), subMonths(now, 1)))
+    .reduce((sum, i) => sum + Number(i.total), 0);
+  const revenueDelta =
+    lastMonthRevenue > 0
+      ? Math.round(((revenueThisMonth - lastMonthRevenue) / lastMonthRevenue) * 100)
+      : null;
 
   const pending = invoices.filter((i) => i.status === 'sent' || i.status === 'overdue');
   const pendingTotal = pending.reduce((sum, i) => sum + Number(i.total), 0);
@@ -155,11 +175,15 @@ async function getData() {
 
   return {
     activeClients,
-    sessionsThisWeek: sessionsWeekRes.count ?? 0,
+    newClientsThisMonth,
+    sessionsThisWeek,
+    sessionsDone,
     revenueThisMonth,
+    revenueDelta,
     pendingCount: pending.length,
     pendingTotal,
     responseRate,
+    upcoming7: upcoming7Res.count ?? 0,
     revenue: buckets,
     notifications: (notificationsRes.data ?? []) as NotificationRow[],
     attention: attention.slice(0, 8),
@@ -178,17 +202,39 @@ export default async function DashboardPage() {
         description="Here's how your business is doing this week."
       />
 
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
-        <KpiCard title="Active clients" value={d.activeClients} icon={Users} accent />
-        <KpiCard title="Sessions this week" value={d.sessionsThisWeek} icon={CalendarCheck} />
-        <KpiCard title="Revenue this month" value={formatAED(d.revenueThisMonth)} icon={Wallet} accent />
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
         <KpiCard
-          title="Pending invoices"
-          value={d.pendingCount}
+          title="Active clients"
+          value={d.activeClients}
+          icon={Users}
+          accent
+          hint={d.newClientsThisMonth > 0 ? `+${d.newClientsThisMonth} this month` : undefined}
+        />
+        <KpiCard
+          title="Sessions this week"
+          value={d.sessionsThisWeek}
+          icon={CalendarCheck}
+          hint={`${d.sessionsDone} done · ${Math.max(0, d.sessionsThisWeek - d.sessionsDone)} to go`}
+        />
+        <KpiCard
+          title="Revenue this month"
+          value={formatAED(d.revenueThisMonth)}
+          icon={Wallet}
+          accent
+          hint={
+            d.revenueDelta != null
+              ? `${d.revenueDelta >= 0 ? '▲' : '▼'} ${Math.abs(d.revenueDelta)}% vs last month`
+              : undefined
+          }
+        />
+        <KpiCard
+          title="Outstanding"
+          value={formatAED(d.pendingTotal)}
           icon={ReceiptText}
-          hint={d.pendingTotal > 0 ? formatAED(d.pendingTotal) : undefined}
+          hint={`${d.pendingCount} invoice${d.pendingCount === 1 ? '' : 's'}`}
         />
         <KpiCard title="Check-in response" value={`${d.responseRate}%`} icon={Activity} />
+        <KpiCard title="Upcoming (7 days)" value={d.upcoming7} icon={CalendarClock} />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">

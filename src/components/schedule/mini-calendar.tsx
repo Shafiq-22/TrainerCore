@@ -1,20 +1,18 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { startOfWeek, format } from 'date-fns';
+import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
+import type { ScheduleView } from './schedule-views';
 
-export function MiniCalendar({ selected }: { selected: string }) {
+export function MiniCalendar({ selected, view }: { selected: string; view: ScheduleView }) {
   const router = useRouter();
   return (
     <Calendar
       mode="single"
       selected={new Date(`${selected}T00:00:00`)}
       onSelect={(d) => {
-        if (d) {
-          const sunday = startOfWeek(d, { weekStartsOn: 0 });
-          router.push(`/schedule?week=${format(sunday, 'yyyy-MM-dd')}`);
-        }
+        if (d) router.push(`/schedule?view=${view}&date=${format(d, 'yyyy-MM-dd')}`);
       }}
       weekStartsOn={0}
       className="rounded-lg border bg-card p-3"

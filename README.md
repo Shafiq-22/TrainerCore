@@ -3,7 +3,7 @@
 **TrainerCore** is an all-in-one business management platform for freelance
 personal trainers in the **UAE & GCC** market. It brings clients, workout
 programming, scheduling, VAT-compliant invoicing and WhatsApp automation into a
-single, bilingual (English / Arabic) web app.
+single English web app.
 
 Built with **Next.js 14 (App Router)**, **TypeScript**, **Tailwind CSS**,
 **shadcn/ui** and **Supabase**, and billed in **AED** with **5% UAE VAT**.
@@ -40,13 +40,10 @@ Built with **Next.js 14 (App Router)**, **TypeScript**, **Tailwind CSS**,
 - **Tax invoicing in AED** — UAE-compliant tax invoices with **5% VAT** and
   polished PDF export (jsPDF).
 - **WhatsApp check-ins** — automated weekly check-ins and reminders via Twilio.
-- **Bilingual EN / AR** — full English and Arabic interface with proper
-  right-to-left (RTL) layout.
+- **Insightful dashboard** — active clients, sessions, revenue trends, outstanding
+  invoices and check-in response rate at a glance.
 - **Subscription billing** — Starter / Pro / Studio tiers via Stripe, with a
   **14-day free trial**.
-
-> The app is **bilingual**: it ships with both **English** and **Arabic**, and
-> the layout switches to **RTL** automatically when Arabic is selected.
 
 ---
 

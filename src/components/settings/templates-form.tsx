@@ -27,8 +27,8 @@ export function TemplatesForm({ initial }: { initial: unknown }) {
   const [templates, setTemplates] = useState<MessageTemplates>(normalizeTemplates(initial));
   const [loading, setLoading] = useState(false);
 
-  function set(key: TemplateKey, locale: 'en' | 'ar', value: string) {
-    setTemplates((t) => ({ ...t, [key]: { ...t[key], [locale]: value } }));
+  function set(key: TemplateKey, value: string) {
+    setTemplates((t) => ({ ...t, [key]: value }));
   }
 
   async function save() {
@@ -51,20 +51,9 @@ export function TemplatesForm({ initial }: { initial: unknown }) {
               Variables: {TEMPLATE_VARIABLES[key].map((v) => `{{${v}}}`).join(', ')}
             </p>
           </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="space-y-1">
-              <Label>English</Label>
-              <Textarea rows={2} value={templates[key].en} onChange={(e) => set(key, 'en', e.target.value)} />
-            </div>
-            <div className="space-y-1">
-              <Label>العربية</Label>
-              <Textarea
-                dir="rtl"
-                rows={2}
-                value={templates[key].ar}
-                onChange={(e) => set(key, 'ar', e.target.value)}
-              />
-            </div>
+          <CardContent>
+            <Label className="sr-only">Message</Label>
+            <Textarea rows={3} value={templates[key]} onChange={(e) => set(key, e.target.value)} />
           </CardContent>
         </Card>
       ))}
