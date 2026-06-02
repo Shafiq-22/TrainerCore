@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import type Stripe from 'stripe';
 import { getStripe } from '@/lib/stripe/client';
 import { env, isStripeConfigured } from '@/lib/env';
-import { syncSubscriptionToTrainer } from '@/lib/stripe/sync';
+import { syncSubscriptionToTrainer, markInvoicePaid } from '@/lib/stripe/sync';
 
 export const runtime = 'nodejs';
 
@@ -30,9 +30,23 @@ export async function POST(req: Request) {
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
-        if (session.subscription && session.customer) {
+        if (session.mode === 'subscription' && session.subscription && session.customer) {
           const sub = await stripe.subscriptions.retrieve(session.subscription as string);
           await syncSubscriptionToTrainer(sub, session.customer as string);
+        } else if (session.payment_status === 'paid') {
+          // One-off invoice paid via a Stripe Payment Link.
+          let invoiceId = session.metadata?.invoice_id ?? null;
+          if (!invoiceId && session.payment_link) {
+            try {
+              const link = await stripe.paymentLinks.retrieve(session.payment_link as string);
+              invoiceId = link.metadata?.invoice_id ?? null;
+            } catch {
+              /* ignore */
+            }
+          }
+          if (invoiceId) {
+            await markInvoicePaid(invoiceId, (session.payment_intent as string | null) ?? null);
+          }
         }
         break;
       }

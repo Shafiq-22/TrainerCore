@@ -38,7 +38,8 @@ export async function middleware(request: NextRequest) {
   }
 
   // Signed in & verified but sitting on an auth screen: send to the app.
-  if (emailVerified && isAuthRoute) {
+  // Exception: /auth/reset, where a recovery session sets a new password.
+  if (emailVerified && isAuthRoute && pathname !== '/auth/reset') {
     const url = request.nextUrl.clone();
     url.pathname = '/dashboard';
     return NextResponse.redirect(url);
